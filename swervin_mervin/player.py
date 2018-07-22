@@ -309,7 +309,7 @@ class Player:
         self.position    = pos
         self.lap_percent = round((pos / track_length) * 100)
 
-    def set_acceleration(self, keys):
+    def set_acceleration(self, keys, joystick):
         """Updates the acceleration factor depending on world conditions."""
         a = -s.FRAME_RATE
 
@@ -320,21 +320,21 @@ class Player:
             if (self.x > 1.0 or self.x < -1.0) and self.speed > (self.settings["top_speed"] / self.settings["offroad_top_speed_factor"]):
                 a = a * 3
             else:
-                if keys[K_UP] or keys[K_x] or s.AUTO_DRIVE or self.status != PlayerStatus.alive:
+                if keys[K_UP] or keys[K_x] or joystick.get_axis(1) < 0 or s.AUTO_DRIVE or self.status != PlayerStatus.alive:
                     a = s.FRAME_RATE
-                elif keys[K_DOWN]:
+                elif keys[K_DOWN] or joystick.get_axis(1) == 0:
                     a = -(s.FRAME_RATE * self.settings["deceleration"])
 
         self.acceleration = a
 
-    def set_direction(self, keys):
+    def set_direction(self, keys, joystick):
         """Updates the direction the player is going, accepts a key-map."""
         d = 0
 
         if self.status == PlayerStatus.alive:
-            if keys[K_LEFT]:
+            if keys[K_LEFT] or joystick.get_axis(0) < 0:
                 d = -self.direction_speed()
-            elif keys[K_RIGHT]:
+            elif keys[K_RIGHT] or joystick.get_axis(0) > 0:
                 d = self.direction_speed()
 
         self.direction = d

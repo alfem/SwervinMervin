@@ -22,6 +22,8 @@ class Game:
         self.player          = None
         self.level           = None
         self.high_scores     = hs.HighScores()
+        self.joystick        = pygame.joystick.Joystick(0)   
+        self.joystick.init()
 
     def play(self):
         if s.TITLE_SCREEN:
@@ -234,8 +236,9 @@ class Game:
 
         # Steering, acceleration.
         keys = pygame.key.get_pressed()
-        p.set_acceleration(keys)
-        p.set_direction(keys)
+        pygame.event.pump()
+        p.set_acceleration(keys, self.joystick)
+        p.set_direction(keys, self.joystick)
 
     def __pause_cycle(self):
         pause_font = pygame.font.Font(s.FONTS["retro_computer"], 64)
